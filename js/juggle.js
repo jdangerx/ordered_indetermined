@@ -1,5 +1,4 @@
 var bars = [];
-var acc = 0.5;
 
 function Bar(x, y, r, g, b, a, w, h, v, acc, ctx) {
   this.x = x;
@@ -23,7 +22,6 @@ Bar.prototype.draw = function () {
 };
 
 Bar.prototype.move = function () {
-  // this.ctx.clearRect(this.x+1, this.y, this.w, this.h);
   this.y = this.y + this.v;
   if (this.y > window.innerHeight - this.h) {
     this.v = -this.v;
@@ -52,18 +50,20 @@ function init() {
   var ncolumns = 200;
   for (var i = 0; i < ncolumns; i++) {
     var wh = window.innerHeight;
-    var v0 = wh/(ncolumns / 2);
-    var acc = wh/(ncolumns * 20);
+    var v0 = wh/(ncolumns);
+    var acc = wh/(ncolumns * 50);
     var cwidth = window.innerWidth/ncolumns;
     var bheight = window.innerHeight/5;
     var npasses = 2;
-    var opacity = 1/(npasses*2);
+    var opacity = 1/(npasses*50);
+    var c_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 0, 255, 255, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
+    var y_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 255, 255, 0, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
+    var m_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 255, 0, 255, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
+    var w_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 255, 255, 255, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
     for (var j = 0; j < npasses; j++){
-      var y_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 255, 255, 0, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
+      bars.push(w_box);
       bars.push(y_box);
-      var c_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 0, 255, 255, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
       bars.push(c_box);
-      var m_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 255, 0, 255, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
       bars.push(m_box);
     }
   }
