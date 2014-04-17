@@ -42,9 +42,10 @@ function update() {
   for (var i = 0, bar; bar = bars[i++];) {
   bar.draw();
   }
+  window.requestAnimationFrame(update);
 }
 
-function draw() {
+function init() {
   var canvas = document.getElementById("bg");
   var ctx = canvas.getContext("2d");
   ctx.canvas.width = window.innerWidth;
@@ -70,7 +71,8 @@ function draw() {
     var m_box = new Bar(i*cwidth, Math.random()*wh/2+wh/4, 255, 0, 255, 0.33, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
     bars.push(m_box);
   }
-  window.setInterval(update, 30);
+  update();
+  // window.setInterval(update, 30);
 }
 
-$(document).ready(draw);
+$(document).ready(init);
