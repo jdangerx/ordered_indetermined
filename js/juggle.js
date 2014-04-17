@@ -38,7 +38,6 @@ function update() {
   for (var i = 0, bar; bar = bars[i++];) {
   bar.move();
   }
-  // this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
   for (var i = 0, bar; bar = bars[i++];) {
   bar.draw();
   }
@@ -57,22 +56,18 @@ function init() {
     var acc = wh/(ncolumns * 20);
     var cwidth = window.innerWidth/ncolumns;
     var bheight = window.innerHeight/5;
-    // var bheight = cwidth;
-    var y_box = new Bar(i*cwidth, Math.random()*wh/2+wh/4, 255, 255, 0, 0.33, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
-    bars.push(y_box);
-    var c_box = new Bar(i*cwidth, Math.random()*wh/2+wh/4, 0, 255, 255, 0.33, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
-    bars.push(c_box);
-    var m_box = new Bar(i*cwidth, Math.random()*wh/2+wh/4, 255, 0, 255, 0.33, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
-    bars.push(m_box);
-    var y_box = new Bar(i*cwidth, Math.random()*wh/2+wh/4, 255, 255, 0, 0.33, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
-    bars.push(y_box);
-    var c_box = new Bar(i*cwidth, Math.random()*wh/2+wh/4, 0, 255, 255, 0.33, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
-    bars.push(c_box);
-    var m_box = new Bar(i*cwidth, Math.random()*wh/2+wh/4, 255, 0, 255, 0.33, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
-    bars.push(m_box);
+    var npasses = 3;
+    var opacity = 1/(npasses*3);
+    for (var j = 0; j < npasses; j++){
+      var y_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 255, 255, 0, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
+      bars.push(y_box);
+      var c_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 0, 255, 255, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
+      bars.push(c_box);
+      var m_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 255, 0, 255, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
+      bars.push(m_box);
+    }
   }
   update();
-  // window.setInterval(update, 30);
 }
 
 $(document).ready(init);
