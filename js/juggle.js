@@ -56,8 +56,8 @@ function init() {
     var acc = wh/(ncolumns * 20);
     var cwidth = window.innerWidth/ncolumns;
     var bheight = window.innerHeight/5;
-    var npasses = 3;
-    var opacity = 1/(npasses*3);
+    var npasses = 2;
+    var opacity = 1/(npasses*2);
     for (var j = 0; j < npasses; j++){
       var y_box = new Bar(i*cwidth, Math.random()*wh/2+wh/8, 255, 255, 0, opacity, cwidth, bheight, Math.random()*v0-v0/2, Math.random()*acc - acc/2, ctx);
       bars.push(y_box);
