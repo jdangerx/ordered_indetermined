@@ -14,46 +14,37 @@ function init() {
 
   for (var i = -3; i < 3; i++){
     for (var j = -3; j < 3; j++) {
-      vertex = new THREE.Vector3(i * 10, j * 10, 0);
-      geometry.vertices.push(vertex);
+      for (var k = -3; k < 3; k++) {
+        vertex = new THREE.Vector3(i * 10, j * 10, k * 10);
+        geometry.vertices.push(vertex);
+      }
     }
   }
 
-  material = new THREE.ParticleSystemMaterial({size: 2, opacity:0.5, transparent:true});
+  material = new THREE.ParticleSystemMaterial({size: 10, opacity:0.5, transparent:true, color: 0xFF00FF});
   mesh = new THREE.ParticleSystem(geometry, material);
   scene.add(mesh)
 
-  // var last_vertex = geometry.vertices[geometry.vertices.length-1];
-  // var new_vertex = new THREE.Vector3(last_vertex.x + DX, last_vertex.y, last_vertex.z)
-  // geometry.vertices.push(new_vertex);
-
-  // var last_vertex = geometry.vertices[geometry.vertices.length-1];
-  // var new_vertex = new THREE.Vector3(last_vertex.x, last_vertex.y + DX, last_vertex.z)
-  // geometry.vertices.push(new_vertex);
-
-  // geometry.computeLineDistances();
-  // material = new THREE.LineBasicMaterial();
-  // mesh = new THREE.Line(geometry, material, THREE.LineStrip);
-  // scene.add(mesh)
-
+  console.log(renderer.getClearAlpha());
   render();
 }
 
 function render() {
   requestAnimationFrame(render);
-  // mesh.rotation.x += 0.01;
-  // mesh.rotation.y += 0.01;
-  // mesh.rotation.z += 0.01;
+  mesh.rotation.x += 0.01;
+  mesh.rotation.y += 0.01;
+  mesh.rotation.z += 0.01;
 
-  for (var i = 0; i < 36; i++) {
+  for (var i = 0, len = mesh.geometry.vertices.length; i < len; i++) {
     var vertex = mesh.geometry.vertices[i];
-    vertex.x += Math.random() * 2 - 1;
-    vertex.y += Math.random() * 2 - 1;
+    var dx = 2;
+    vertex.setX(vertex.x + Math.random() * dx - 0.5 * dx);
+    vertex.setY(vertex.y + Math.random() * dx - 0.5 * dx);
+    vertex.setZ(vertex.z + Math.random() * dx - 0.5 * dx);
   }
-  mesh.geometry.__dirtyVertices = true;
-  // mesh = new THREE.ParticleSystem(geometry, material);
-
+  mesh.geometry.verticesNeedUpdate = true;
   renderer.render(scene, camera);
+
 }
 
 $(document).ready(init);
