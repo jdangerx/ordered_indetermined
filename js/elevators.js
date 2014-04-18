@@ -2,20 +2,19 @@
 var camera, renderer;
 var scene = new THREE.Scene();
 var people = [];
-var dS = 70;
+var dS = 100;
 
 function init() {
-  scene.fog = new THREE.Fog(0x111111, 1, 500);
+  scene.fog = new THREE.Fog(0x111111, 150, 600);
   camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-  camera.position.z = 200;
+  camera.position.z = 300;
 
-  renderer = new THREE.WebGLRenderer();
-  renderer.setClearColor(0x111111, 1);
+  renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setClearColor(0x181818, 1)
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  // var person = new Person();
   for (var i = 0; i < 100; i++) {
     people.push(new Person());
   }
@@ -24,7 +23,10 @@ function init() {
 
 function Person() {
   var geometry = new THREE.Geometry();
-  var taillen = 30;
+  var taillen = 200;
+  // var init_pos = new THREE.Vector3(Math.round(Math.random()*5-2.5),
+                                   // Math.round(Math.random()*5-2.5),
+                                   // Math.round(Math.random()*5-2.5));
   var init_pos = new THREE.Vector3(Math.round(Math.random()*2*dS-dS),
                                    Math.round(Math.random()*2*dS-dS),
                                    Math.round(Math.random()*2*dS-dS));
@@ -33,16 +35,15 @@ function Person() {
     vertex.add(init_pos);
     geometry.vertices.push(vertex);
   }
-  var color = new THREE.Color(Math.random()*0.5+0.5,
-                              Math.random()*0.5+0.5,
-                              Math.random()*0.5+0.5);
+  var color = new THREE.Color(Math.random()*0.4+0.6,
+                              Math.random()*0.9+0.1,
+                              Math.random()*0.9+0.1);
   var material = new THREE.LineBasicMaterial({color: color.getHex(),
-                                              linewidth: 2,
+                                              linewidth: 3,
                                               fog:true});
   this.polyline = new THREE.Line(geometry, material);
   scene.add(this.polyline);
   this.velocity = new THREE.Vector3(1, 0, 0);
-  this.sign = 1;
   this.dests = [];
 }
 
@@ -86,10 +87,9 @@ function render() {
   for (var i in people) {
     people[i].move();
     people[i].polyline.rotation.y += 0.003;
-    // people[i].polyline.rotation.x = 0.5;
+    people[i].polyline.rotation.x = 0.5;
     // people[i].polyline.rotation.z += 0.01;
   }
-
 
   renderer.render(scene, camera);
   requestAnimationFrame(render);
