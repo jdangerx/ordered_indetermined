@@ -170,4 +170,4 @@ function onMouseMove (evt) {
 }
 
 $(document).ready(init);
-$(document).mousemove(evt, onMouseMove);
+$(document).mousemove(onMouseMove);
