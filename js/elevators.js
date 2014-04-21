@@ -6,7 +6,7 @@ var dS = 100;
 var elevator_spacing = 20;
 var elevator_capacity = 20;
 var floor_spacing = 20;
-var num_people = 100;
+var num_people = 150;
 var taillen = 200;
 var rotation = true;
 
