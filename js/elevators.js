@@ -170,8 +170,8 @@ function render() {
 }
 
 function onMouseMove (evt) {
-  yrot = (evt.pageX-window.innerWidth/2)/(window.innerWidth) * 0.008;
-  xrot = (evt.pageY-window.innerHeight/2)/(window.innerHeight) * 0.008;
+  yrot = (evt.pageX-window.innerWidth/2)/(window.innerWidth) * 0.012;
+  xrot = (evt.pageY-window.innerHeight/2)/(window.innerHeight) * 0.012;
   console.log(yrot, xrot);
 }
 
