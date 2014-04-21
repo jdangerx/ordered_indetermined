@@ -1,14 +1,13 @@
-// var scene, camera, renderer, geometry, material, mesh, particles, polyline;
 var camera, renderer;
 var scene = new THREE.Scene();
 var people = [];
 var elevators = [];
 var dS = 100;
-var elevator_spacing = 100;
-var elevator_capacity = 4;
-var floor_spacing = 50;
-var num_people = 200;
-var taillen = 100;
+var elevator_spacing = 20;
+var elevator_capacity = 20;
+var floor_spacing = 20;
+var num_people = 100;
+var taillen = 200;
 var rotation = true;
 
 function init() {
@@ -17,7 +16,7 @@ function init() {
   camera.position.z = 300;
 
   renderer = new THREE.WebGLRenderer({antialias:true});
-  renderer.setClearColor(0x181818, 1)
+  renderer.setClearColor(0x181818, 1);
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
@@ -27,28 +26,35 @@ function init() {
   }
 
   elev_per_row = dS/elevator_spacing + 1;
-  // for (var i = 0; i < elev_per_row; i++) {
-  //   for (var j = 0; j < elev_per_row; j++) {
-  //     elevators.push(new Elevator(i*elevator_spacing - dS, j*elevator_spacing - dS, 0));
-  //   }
-  // }
+  for (var i = 0; i < elev_per_row; i++) {
+    for (var j = 0; j < elev_per_row; j++) {
+      var elevator = new Elevator(i*elevator_spacing - dS, j*elevator_spacing - dS, 0);
+      elevators.push(elevator);
+    }
+  }
   render();
 }
 
-// function Elevator(x, y, z) {
-  // this.velocity = 1;
-  // this.passengers = [];
-  // this.pos = new THREE.Vector3(x, y, z);
-// }
+function Elevator(x, y, z) {
+  this.velocity = 0.5;
+  this.npassengers = 0;
+  this.maxy = dS;
+  this.pos = new THREE.Vector3(x, y, z);
+}
 
-// Elevator.move = function () {
-  // if (Math.abs(this.pos.y) > dS) {
-    // this.velocity = -this.velocity;
-  // }
-  // this.pos.y += this.velocity;
-// }
+Elevator.prototype.move = function () {
+  this.pos.y += this.velocity;
+  // if (this.npassengers == 0) { // no passengers: roam
+    // if (Math.abs(this.pos.y) > dS) {
+      // this.velocity = -this.velocity;
+    // }
+  if (Math.abs(this.pos.y) > this.maxy) {
+    this.velocity = -this.velocity;
+  }
+}
 
 function Person() {
+  this.elevator = false;
   var geometry = new THREE.Geometry();
   var init_pos = new THREE.Vector3(Math.round(Math.random()*2*dS-dS),
                                    Math.round(Math.random()*2*dS/floor_spacing-1*dS/floor_spacing)*floor_spacing,
@@ -86,7 +92,6 @@ Person.prototype.move = function () {
     this.dests.push(final_dest);
     var elevator_top = nearest_elevator(final_dest);
     this.dests.push(elevator_top);
-    // var elevator_bottom = nearest_elevator(final_dest);
   }
   var cur_dest = this.dests[this.dests.length-1]
   var vertices = this.polyline.geometry.vertices
@@ -94,7 +99,6 @@ Person.prototype.move = function () {
   var dX = clamp(cur_dest.x - last_vertex.x, -1, 1);
   var dY = clamp(cur_dest.y - last_vertex.y, -1, 1);
   var dZ = clamp(cur_dest.z - last_vertex.z, -1, 1);
-
   for (var i = 0, len = vertices.length; i < len; i++) {
     if (i < len - 1) {
       vertices[i].copy(vertices[i+1]);
@@ -104,25 +108,41 @@ Person.prototype.move = function () {
       } else if (dZ != 0) {
         this.velocity.set(0, 0, dZ);
       } else if (dY != 0) {
-        // for (i in elevators) {
-        //   var elevator = elevators[i];
-        //   // is there an elevator?
-        //   if (elevator.passengers.length < elevator_capacity && elevator.pos.y == last_vertex.y) {
-        //     this.velocity.set(0, dY, 0);
-        //     // this.elevator = elevator;
-        //   } else {
-        //     this.velocity.set(0, 0, 0); // wait for an elevator
-        //   }
-        // }
-        this.velocity.set(0, dY, 0);
-      } else {
-        // this.velocity.set(0, 0, 0);
+        for (var j in elevators) {
+          var elevator = elevators[j];
+          // is there an elevator?
+          if (elevator.pos.y == last_vertex.y) {
+            if (Math.sign(elevator.velocity * dY) == 1) {
+              if (elevator.npassengers < elevator_capacity) {
+                if (this.elevator == false) {
+                  this.elevator = elevator;
+                  this.elevator.npassengers++;
+                  this.elevator.maxy = Math.max(this.elevator.maxy, Math.abs(cur_dest.y));
+                }
+                this.velocity.set(0, elevator.velocity, 0);
+              }
+            }
+          } else {
+            this.velocity.set(0, 0, 0); // wait for an elevator
+          }
+        }
+      } else { // at destination
+        if (this.elevator != false) { // if on elevator, get off
+          this.elevator.npassengers--;
+          this.elevator.maxy = dS;
+          // console.log(this.elevator.npassengers);
+          this.elevator = false;
+        }
         this.dests.pop();
       }
       last_vertex.add(this.velocity);
     }
   }
+  // if (this.velocity.equals(new THREE.Vector3(0, 0, 0))) {
+    // this.polyline.geometry.verticesNeedUpdate = false;
+  // } else {
   this.polyline.geometry.verticesNeedUpdate = true;
+  // }
 }
 
 function clamp(x, a, b) {
@@ -130,6 +150,9 @@ function clamp(x, a, b) {
 }
 
 function render() {
+  for (var i in elevators) {
+    elevators[i].move();
+  }
   for (var i in people) {
     people[i].move();
     if (rotation == true) {
