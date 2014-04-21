@@ -6,9 +6,9 @@ var elevators = [];
 var dS = 100;
 var elevator_spacing = 100;
 var elevator_capacity = 4;
-var floor_spacing = 25;
-var num_people = 40;
-var taillen = 200;
+var floor_spacing = 50;
+var num_people = 200;
+var taillen = 100;
 var rotation = true;
 
 function init() {
@@ -27,11 +27,11 @@ function init() {
   }
 
   elev_per_row = dS/elevator_spacing + 1;
-  for (var i = 0; i < elev_per_row; i++) {
-    for (var j = 0; j < elev_per_row; j++) {
-      elevators.push(new Elevator(i*elevator_spacing - dS, j*elevator_spacing - dS, 0));
-    }
-  }
+  // for (var i = 0; i < elev_per_row; i++) {
+  //   for (var j = 0; j < elev_per_row; j++) {
+  //     elevators.push(new Elevator(i*elevator_spacing - dS, j*elevator_spacing - dS, 0));
+  //   }
+  // }
   render();
 }
 
@@ -59,8 +59,8 @@ function Person() {
     geometry.vertices.push(vertex);
   }
   var color = new THREE.Color(Math.random()*0.4+0.2,
-                              Math.random()*0.5+0.5,
-                              Math.random()*0.4+0.2);
+                              Math.random()*0.4+0.6,
+                              Math.random()*0.4+0.6);
   var material = new THREE.LineBasicMaterial({color: color.getHex(),
                                               linewidth: 1,
                                               fog:true});
