@@ -2,10 +2,12 @@
 var camera, renderer;
 var scene = new THREE.Scene();
 var people = [];
+var elevators = [];
 var dS = 100;
 var elevator_spacing = 100;
+var elevator_capacity = 4;
 var floor_spacing = 25;
-var num_people = 120;
+var num_people = 40;
 var taillen = 200;
 var rotation = true;
 
@@ -23,7 +25,27 @@ function init() {
   for (var i = 0; i < num_people; i++) {
     people.push(new Person());
   }
+
+  elev_per_row = dS/elevator_spacing + 1;
+  for (var i = 0; i < elev_per_row; i++) {
+    for (var j = 0; j < elev_per_row; j++) {
+      elevators.push(new Elevator(i*elevator_spacing - dS, j*elevator_spacing - dS, 0));
+    }
+  }
   render();
+}
+
+// function Elevator(x, y, z) {
+  // this.velocity = 1;
+  // this.passengers = [];
+  // this.pos = new THREE.Vector3(x, y, z);
+// }
+
+// Elevator.move = function () {
+  // if (Math.abs(this.pos.y) > dS) {
+    // this.velocity = -this.velocity;
+  // }
+  // this.pos.y += this.velocity;
 }
 
 function Person() {
@@ -32,14 +54,13 @@ function Person() {
                                    Math.round(Math.random()*2*dS/floor_spacing-1*dS/floor_spacing)*floor_spacing,
                                    Math.round(Math.random()*2*dS-dS));
   for (var i = 0; i < taillen; i++) {
-    // var vertex = new THREE.Vector3(i, 0, 0);
     var vertex = new THREE.Vector3(0, 0, 0);
     vertex.add(init_pos);
     geometry.vertices.push(vertex);
   }
-  var color = new THREE.Color(Math.random()*0.4+0.6,
-                              Math.random()*0.9+0.1,
-                              Math.random()*0.9+0.1);
+  var color = new THREE.Color(Math.random()*0.4+0.2,
+                              Math.random()*0.5+0.5,
+                              Math.random()*0.4+0.2);
   var material = new THREE.LineBasicMaterial({color: color.getHex(),
                                               linewidth: 1,
                                               fog:true});
@@ -74,9 +95,6 @@ Person.prototype.move = function () {
   var dY = clamp(cur_dest.y - last_vertex.y, -1, 1);
   var dZ = clamp(cur_dest.z - last_vertex.z, -1, 1);
 
-  // break the destination into step-by-step directions immediately, and then just pop em off
-  // you'll need to change on the fly if an elevator becomes open nearby though
-
   for (var i = 0, len = vertices.length; i < len; i++) {
     if (i < len - 1) {
       vertices[i].copy(vertices[i+1]);
@@ -86,6 +104,16 @@ Person.prototype.move = function () {
       } else if (dZ != 0) {
         this.velocity.set(0, 0, dZ);
       } else if (dY != 0) {
+        // for (i in elevators) {
+        //   var elevator = elevators[i];
+        //   // is there an elevator?
+        //   if (elevator.passengers.length < elevator_capacity && elevator.pos.y == last_vertex.y) {
+        //     this.velocity.set(0, dY, 0);
+        //     // this.elevator = elevator;
+        //   } else {
+        //     this.velocity.set(0, 0, 0); // wait for an elevator
+        //   }
+        // }
         this.velocity.set(0, dY, 0);
       } else {
         // this.velocity.set(0, 0, 0);
