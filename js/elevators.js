@@ -165,4 +165,9 @@ function render() {
   requestAnimationFrame(render);
 }
 
+function onMouseMove (evt) {
+  console.log(evt.pageX, evt.pageY);
+}
+
 $(document).ready(init);
+$(document).mousemove(evt, onMouseMove);
