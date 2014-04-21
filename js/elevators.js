@@ -3,6 +3,11 @@ var camera, renderer;
 var scene = new THREE.Scene();
 var people = [];
 var dS = 100;
+var elevator_spacing = 100;
+var floor_spacing = 25;
+var num_people = 120;
+var taillen = 200;
+var rotation = true;
 
 function init() {
   scene.fog = new THREE.Fog(0x111111, 150, 600);
@@ -15,7 +20,7 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
-  for (var i = 0; i < 100; i++) {
+  for (var i = 0; i < num_people; i++) {
     people.push(new Person());
   }
   render();
@@ -23,15 +28,12 @@ function init() {
 
 function Person() {
   var geometry = new THREE.Geometry();
-  var taillen = 200;
-  // var init_pos = new THREE.Vector3(Math.round(Math.random()*5-2.5),
-                                   // Math.round(Math.random()*5-2.5),
-                                   // Math.round(Math.random()*5-2.5));
   var init_pos = new THREE.Vector3(Math.round(Math.random()*2*dS-dS),
-                                   Math.round(Math.random()*2*dS-dS),
+                                   Math.round(Math.random()*2*dS/floor_spacing-1*dS/floor_spacing)*floor_spacing,
                                    Math.round(Math.random()*2*dS-dS));
   for (var i = 0; i < taillen; i++) {
-    var vertex = new THREE.Vector3(i, 0, 0);
+    // var vertex = new THREE.Vector3(i, 0, 0);
+    var vertex = new THREE.Vector3(0, 0, 0);
     vertex.add(init_pos);
     geometry.vertices.push(vertex);
   }
@@ -39,7 +41,7 @@ function Person() {
                               Math.random()*0.9+0.1,
                               Math.random()*0.9+0.1);
   var material = new THREE.LineBasicMaterial({color: color.getHex(),
-                                              linewidth: 3,
+                                              linewidth: 1,
                                               fog:true});
   this.polyline = new THREE.Line(geometry, material);
   scene.add(this.polyline);
@@ -47,30 +49,46 @@ function Person() {
   this.dests = [];
 }
 
+function nearest_elevator(dest) {
+  var new_dest = dest.clone();
+  new_dest.divideScalar(elevator_spacing);
+  new_dest.setX(Math.round(new_dest.x));
+  new_dest.setZ(Math.round(new_dest.y));
+  new_dest.multiplyScalar(elevator_spacing);
+  return new_dest;
+}
 Person.prototype.move = function () {
   if (this.dests.length == 0) {
-    this.dests.push(new THREE.Vector3(Math.round(Math.random()*2*dS-dS),
-                                      Math.round(Math.random()*2*dS-dS),
-                                      Math.round(Math.random()*2*dS-dS)));
+    var final_dest = new THREE.Vector3(Math.round(Math.random()*2*dS-dS),
+                                       Math.round(Math.random()*2*dS/floor_spacing-1*dS/floor_spacing)*floor_spacing,
+                                       Math.round(Math.random()*2*dS-dS));
+    this.dests.push(final_dest);
+    var elevator_top = nearest_elevator(final_dest);
+    this.dests.push(elevator_top);
+    // var elevator_bottom = nearest_elevator(final_dest);
   }
-
+  var cur_dest = this.dests[this.dests.length-1]
   var vertices = this.polyline.geometry.vertices
+  var last_vertex = vertices[vertices.length - 1];
+  var dX = clamp(cur_dest.x - last_vertex.x, -1, 1);
+  var dY = clamp(cur_dest.y - last_vertex.y, -1, 1);
+  var dZ = clamp(cur_dest.z - last_vertex.z, -1, 1);
+
+  // break the destination into step-by-step directions immediately, and then just pop em off
+  // you'll need to change on the fly if an elevator becomes open nearby though
+
   for (var i = 0, len = vertices.length; i < len; i++) {
     if (i < len - 1) {
       vertices[i].copy(vertices[i+1]);
     } else {
-      var last_vertex = vertices[i];
-      var dX = clamp(this.dests[0].x - last_vertex.x, -1, 1);
-      var dY = clamp(this.dests[0].y - last_vertex.y, -1, 1);
-      var dZ = clamp(this.dests[0].z - last_vertex.z, -1, 1);
       if (dX != 0) {
         this.velocity.set(dX, 0, 0);
-      } else if (dY != 0) {
-        this.velocity.set(0, dY, 0);
       } else if (dZ != 0) {
         this.velocity.set(0, 0, dZ);
+      } else if (dY != 0) {
+        this.velocity.set(0, dY, 0);
       } else {
-        this.velocity.set(0, 0, 0);
+        // this.velocity.set(0, 0, 0);
         this.dests.pop();
       }
       last_vertex.add(this.velocity);
@@ -86,9 +104,10 @@ function clamp(x, a, b) {
 function render() {
   for (var i in people) {
     people[i].move();
-    people[i].polyline.rotation.y += 0.003;
-    people[i].polyline.rotation.x = 0.5;
-    // people[i].polyline.rotation.z += 0.01;
+    if (rotation == true) {
+      people[i].polyline.rotation.y += 0.003;
+      people[i].polyline.rotation.x = 0.5;
+    }
   }
 
   renderer.render(scene, camera);
