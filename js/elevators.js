@@ -76,6 +76,8 @@ function Person() {
   scene.add(this.polyline);
   this.velocity = new THREE.Vector3(1, 0, 0);
   this.dests = [];
+  this.polyline.rotation.x = 0.5;
+  this.polyline.rotation.y = 0.3;
 }
 
 function nearest_elevator(dest) {
@@ -158,8 +160,8 @@ function render() {
   for (var i in people) {
     people[i].move();
     if (rotation == true) {
-      people[i].polyline.rotation.y = yrot;
-      people[i].polyline.rotation.x = xrot;
+      people[i].polyline.rotation.y += yrot;
+      people[i].polyline.rotation.x += xrot;
     }
   }
 
@@ -168,8 +170,9 @@ function render() {
 }
 
 function onMouseMove (evt) {
-  yrot += (evt.pageX-window.innerWidth/2)/(window.innerWidth) * 0.008;
-  xrot += (evt.pageY-window.innerHeight/2)/(window.innerHeight) * 0.008;
+  yrot = (evt.pageX-window.innerWidth/2)/(window.innerWidth) * 0.008;
+  xrot = (evt.pageY-window.innerHeight/2)/(window.innerHeight) * 0.008;
+  console.log(yrot, xrot);
 }
 
 $(document).ready(init);
