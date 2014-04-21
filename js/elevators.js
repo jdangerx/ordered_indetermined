@@ -38,7 +38,7 @@ function init() {
 }
 
 function Elevator(x, y, z) {
-  this.velocity = 0.5;
+  this.velocity = 5;
   this.npassengers = 0;
   this.maxy = dS;
   this.pos = new THREE.Vector3(x, y, z);
