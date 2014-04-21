@@ -9,8 +9,8 @@ var floor_spacing = 20;
 var num_people = 200;
 var taillen = 200;
 var rotation = true;
-var xrot = 0.5;
-var yrot = 0.3;
+var xrot = 0;
+var yrot = 0.003;
 
 function init() {
   scene.fog = new THREE.Fog(0x111111, 150, 600);
