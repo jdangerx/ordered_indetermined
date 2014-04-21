@@ -9,6 +9,8 @@ var floor_spacing = 20;
 var num_people = 200;
 var taillen = 200;
 var rotation = true;
+var xrot = 0.5;
+var yrot = 0.003;
 
 function init() {
   scene.fog = new THREE.Fog(0x111111, 150, 600);
@@ -156,8 +158,8 @@ function render() {
   for (var i in people) {
     people[i].move();
     if (rotation == true) {
-      people[i].polyline.rotation.y += 0.003;
-      people[i].polyline.rotation.x = 0.5;
+      people[i].polyline.rotation.y += yrot;
+      people[i].polyline.rotation.x = xrot;
     }
   }
 
@@ -167,6 +169,7 @@ function render() {
 
 function onMouseMove (evt) {
   console.log(evt.pageX, evt.pageY);
+  yrot = (evt.pageY-window.innerHeight/2)/(window.innerHeight) * 0.003;
 }
 
 $(document).ready(init);
