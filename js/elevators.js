@@ -46,7 +46,7 @@ function init() {
     // this.velocity = -this.velocity;
   // }
   // this.pos.y += this.velocity;
-}
+// }
 
 function Person() {
   var geometry = new THREE.Geometry();
